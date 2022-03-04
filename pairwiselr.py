@@ -63,14 +63,6 @@ class KeyCovariatePairwiseLR(object):
             x_basis_row = self.calc_blended_basis(x_vec_test, z_data) 
             x_basis_matrix.append(x_basis_row)
             
-            # ## 
-            # x_basis_all = []
-            # x_samplerow = row[1][self.col_x_] # contains all features values for one sample
-            # for ft in col_xz:
-            #     x_data = x_samplerow[ft]
-            #     x_basis_1ft = self.calc_basis(x_data, z_data, ft)
-            #     x_basis_all.append(x_basis_1ft)
-            # ##
         blended_model = ridge(alpha=self.alpha_blend_)
         blended_model.fit(x_basis_matrix, df[col_y])
         self.blended_model_ = blended_model
@@ -85,7 +77,6 @@ class KeyCovariatePairwiseLR(object):
         Given one sample of: [x_data_vec] containing multiple features, and [z_data] of one key-cov value
         Calculate all possible g_i(x)*x_j, combinations between key-cov function and x_j 
         '''
-        # x_data_vec = np.append(x_data_vec,1) # add constant x0 to input features <-- basis function list for x_ features
         x_basis = []
         z_unique = self.cov_range_[self.col_z_]
         n_i = len(x_data_vec)
@@ -141,7 +132,6 @@ class KeyCovariatePairwiseLR(object):
             x = x_sample[ft_name]
             v_j = v[i_ft*step_size:(i_ft+1)*step_size]
             y_ft_x = self.calc_pairwise_reg(x, z, v_j)
-            # import pdb;pdb.set_trace()
             if not ft_name==self.col_z_:
                 y_ft_median = self.calc_pairwise_reg(self.ft_median_[ft_name], z, v_j)
             else:
@@ -169,12 +159,10 @@ class KeyCovariatePairwiseLR(object):
         for i_ft in range(n_ft):
             try:
                 ft_name = ft_names[i_ft]
-                # print(ft_name)
             except:
                 import pdb;pdb.set_trace()
             if ft_name in ft_plot:
                 v_j = v[i_ft*step_size:(i_ft+1)*step_size]
-                # print(f'{ft_name}, {v_j}')            
                 if ft_name == self.col_z_:
                     x_unique = self.cov_range_[ft_name+'_plot']
                 else:
@@ -309,22 +297,8 @@ class KeyCovariate2d(object):
 
             x_basis_row = self.calc_blended_basis(x_vec_test, z_data) 
             x_basis_matrix.append(x_basis_row)
-            
-            ### 
-            # x_basis_all = []
-            # x_samplerow = row[1][self.col_x_] # contains all features values for one sample
-            # for ft in col_xz:
-            #     x_data = x_samplerow[ft]
-            #     x_basis_1ft = self.calc_basis(x_data, z_data, ft)
-            #     x_basis_all.append(x_basis_1ft)
-            ###
-        # blended_model = ridge(alpha=self.alpha_blend_)
-        # blended_model.fit(x_basis_matrix, df[col_y])
-        # self.blended_model_ = blended_model
-        
+
         x_basis_all = self.calc_df_basis(df) # <<<<<<<<<<<<< FIX; how to convert to 1d and back?
-        # import pdb;pdb.set_trace()        
-        # Train blended (key-cov pairwise LR) model
         x_basis_all = np.reshape(x_basis_all, (len(x_basis_all), self.cov_steps_**2*len(self.col_xz_)))
         blended_model = ridge(alpha=self.alpha_blend_)
         blended_model.fit(x_basis_all, df[col_y])
@@ -335,7 +309,6 @@ class KeyCovariate2d(object):
         Given one sample of: [x_data_vec] containing multiple features, and [z_data] of one key-cov value
         Calculate all possible g_i(x)*x_j, combinations between key-cov function and x_j 
         '''
-        # x_data_vec = np.append(x_data_vec,1) # add constant x0 to input features <-- basis function list for x_ features
         x_basis = []
         z_unique = self.cov_range_[self.col_z_]
         n_i = len(x_data_vec)
@@ -378,7 +351,6 @@ class KeyCovariate2d(object):
             j = 0 # ticker for z, columns
             for z in z_unique:
                 basis_mat[i, j] = self.func_smooth_x(x_data, x, self.coeff_smooth_x)*self.func_smooth_z(z_data, z, self.coeff_smooth_z)
-                # print(f'{i}, {j}: {basis_mat[i,j]:.4f}')
                 j+=1
             i+=1
         return basis_mat
@@ -403,24 +375,15 @@ class KeyCovariate2d(object):
         Given trained blended model and new test data, predict
         """
         # Get matrix of all possible blends between key-cov step function and feature-specific regression
-        # x_basis_matrix = []
-        # import pdb;pdb.set_trace()
         x_basis_matrix = self.calc_df_basis(df)
         x_basis_matrix = np.reshape(x_basis_matrix, (len(x_basis_matrix), self.cov_steps_**2*len(self.col_xz_)))
-        # for row in df[self.col_xz_].iterrows():
-        #     x_vec_test = row[1][self.col_x_].values
-        #     z_data = row[1][self.col_z_]
-        #     x_basis_row = self.calc_blended_basis(x_vec_test, z_data) 
-        #     # import pdb;pdb.set_trace()
-        #     x_basis_matrix.append(x_basis_row)
+
         return self.blended_model_.predict(x_basis_matrix)      
 
     def plot_pairwise_interactions(self, ft_names=[], n_plot_cols=4):
         mpl.rcParams["font.size"] = 8
         mpl.rcParams["axes.titlesize"] = 12
 
-        # n_ft = len(self.col_x_)
-        # n_plot_cols = 4
         if not ft_names:
             ft_names = self.col_x_
         n_ft = len(ft_names)
@@ -458,7 +421,6 @@ class KeyCovariate2d(object):
                 plt.title(ft_name)
                 plt.ylabel('pH contribution')
                 plt.xlabel(self.col_z_) 
-                # plt.xlim([6.8, 7.5])
             else:
                 print('cmap')
                 plt.subplot(n_plot_rows, n_plot_cols, i_ft+1)
@@ -467,23 +429,6 @@ class KeyCovariate2d(object):
                 plt.colorbar()
                 plt.xlabel(self.col_z_) 
                 plt.title(ft_name.replace(' (mean)', ''))
-            # 1*f1(z)+1*f2(z)+... not plotted
-        # i_ft+=1
-        # v_j = v[i_ft*step_size:(i_ft+1)*step_size]
-        # f = np.zeros(20)
-        # for z in z_unique:
-        #     f_j = [self.func_smooth_z(_, z, self.coeff_smooth_z) for _ in z_unique]
-        #     f+=f_j
-        # # import pdb;pdb.set_trace()
-        # plt.subplot(n_plot_rows, n_plot_cols, i_ft+1)
-        # plt.plot(z_unique, f)
-        # plt.title('prev_pH')
-        # plt.ylabel('pH contribution')
-        # plt.xlabel(self.col_z_) 
-        # z_sig = [self.func_smooth_z(_, 7.2, self.coeff_smooth_z) for _ in z_unique]
-        # plt.plot(z_unique, z_sig)
-        # plt.title(ft_name)
-        # plt.xlabel(self.col_z_) 
         plt.tight_layout()
  
     @staticmethod
