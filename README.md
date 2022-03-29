@@ -9,10 +9,10 @@ The module allows you to input a design matrix of multiple input features, desig
 For full model description, see paper [here](up date when link is out).
 
 # Usage
-A usage example with sample data is given [here](https://github.com/philips-internal/pairwise-regression/tree/main/example) for reference.
+A usage example with sample data is given [here](https://github.com/philips-labs/pairwise-regression/tree/main/example) for reference.
 
 # Requirements
-See [here](https://github.com/philips-internal/pairwise-regression/blob/main/requirements.txt) for package requirements.
+See [here](https://github.com/philips-labs/pairwise-regression/blob/main/requirements.txt) for package requirements.
 
 # Contributing
-We appreciate any contributions in the form of ideas, feature requests, bug reports, bug fixes, documentation improvements, code reformatting, and code submissions. You can contact the [maintainers](https://github.com/philips-internal/pairwise-regression/blob/main/MAINTAINERS.md). Please see the [Contributing guide](https://github.com/philips-internal/pairwise-regression/blob/main/CONTRIBUTING.md).
+We appreciate any contributions in the form of ideas, feature requests, bug reports, bug fixes, documentation improvements, code reformatting, and code submissions. You can contact the [maintainers](https://github.com/philips-labs/pairwise-regression/blob/main/MAINTAINERS.md). Please see the [Contributing guide](https://github.com/philips-labs/pairwise-regression/blob/main/CONTRIBUTING.md).
